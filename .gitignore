@@ -7,5 +7,15 @@ wheels/
 *.egg-info
 
 # Virtual environments
-.venv
-.envdb.sqlite3 
+.venv/
+.env
+
+# Database
+db.sqlite3
+
+# Static and Media files
+staticfiles/
+media/
+
+# Docker
+*.log
