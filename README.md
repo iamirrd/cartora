@@ -4,7 +4,7 @@ A modular e-commerce backend API built with **Python, Django, and Django REST Fr
 
 ## Features
 
-- **Authentication:** JWT authentication, user registration, login/logout, and GitHub social login.
+- **Authentication:** JWT authentication, user registration, login/logout, and GitHub/Google social login.
 - **Product Management:** Products, categories, brands, images, variants, and inventory management.
 - **Shopping Cart:** Quantity management, automatic price calculation, and duplicate item prevention.
 - **Order Management:** Order processing with snapshot-based pricing.
@@ -14,6 +14,7 @@ A modular e-commerce backend API built with **Python, Django, and Django REST Fr
 - **Shipping:** Configurable shipping methods and delivery costs.
 - **Notifications:** In-app notifications and read-status management.
 - **Performance Optimization:** Database indexing, `select_related`, and `prefetch_related`.
+- **API Documentation:** Interactive API documentation with Swagger.
 - **Containerization:** Docker and Docker Compose.
 
 ## Tech Stack
@@ -24,6 +25,7 @@ A modular e-commerce backend API built with **Python, Django, and Django REST Fr
 - PostgreSQL
 - SimpleJWT
 - django-allauth
+- Swagger / OpenAPI
 - Docker & Docker Compose
 - Gunicorn
 
@@ -56,10 +58,12 @@ docker compose up --build
 docker compose run --rm web python manage.py createsuperuser
 ```
 
-### Access the Application
+## Access the Application
 
 - **Application:** http://127.0.0.1:8000/
 - **Admin Panel:** http://127.0.0.1:8000/admin/
+- **Swagger API Documentation:** http://127.0.0.1:8000/api/docs/
+- **OpenAPI Schema:** http://127.0.0.1:8000/api/schema/
 
 ## Note
 
