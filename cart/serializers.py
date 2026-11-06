@@ -1,3 +1,4 @@
+from decimal import Decimal
 from rest_framework import serializers
 from .models import Cart, CartItem
 from accounts.models import User
@@ -23,10 +24,10 @@ class CartSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('id', 'user', 'created_at', 'updated_at')
     
-    def get_total_price(self, obj):
+    def get_total_price(self, obj) -> Decimal:
         return obj.total_price
     
-    def get_items_count(self, obj):
+    def get_items_count(self, obj) -> int:
         return obj.items_count
 
 
@@ -47,8 +48,23 @@ class CartItemSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at',
         )
     
-    def get_unit_price(self, obj):
+    def get_unit_price(self, obj) -> Decimal:
         return obj.unit_price
     
-    def get_subtotal(self, obj):
+    def get_subtotal(self, obj) -> Decimal:
         return obj.subtotal
+    def validate(self, attrs):
+        variant = attrs.get('variant', getattr(self.instance, 'variant', None))
+        quantity = attrs.get('quantity', getattr(self.instance, 'quantity', 1))
+        if not variant.is_active or not variant.product.is_active:
+            raise serializers.ValidationError({'variant': 'This product is unavailable.'})
+        inventory = getattr(variant, 'inventory', None)
+        if inventory is None or not inventory.is_active or quantity > inventory.quantity:
+            raise serializers.ValidationError({'quantity': 'Insufficient stock.'})
+        return attrs
+
+    def update(self, instance, validated_data):
+        variant = validated_data.get('variant', instance.variant)
+        validated_data['price'] = variant.price
+        validated_data['discount_price'] = variant.discount_price
+        return super().update(instance, validated_data)

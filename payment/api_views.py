@@ -1,3 +1,5 @@
+from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParameter
+from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,6 +14,9 @@ from .services import process_payment, verify_payment
 class PaymentRequestView(APIView):
     permission_classes = [IsAuthenticated]
     
+    @extend_schema(request=PaymentRequestSerializer, responses={200: inline_serializer(
+        name='PaymentRequestResponse', fields={'payment_url': serializers.CharField()},
+    )})
     def post(self, request):
         serializer = PaymentRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -27,6 +32,10 @@ class PaymentRequestView(APIView):
 class PaymentVerifyView(APIView):
     permission_classes = []   # عمومی (کال‌بک درگاه)
     
+    @extend_schema(parameters=[
+        OpenApiParameter('authority', str, required=True),
+        OpenApiParameter('status', str, required=True, enum=['OK', 'NOK']),
+    ], responses={200: inline_serializer(name='PaymentVerificationResponse', fields={'message': serializers.CharField()})})
     def get(self, request):
         authority = request.query_params.get('authority')
         status_param = request.query_params.get('status')
@@ -46,4 +55,4 @@ class TransactionListView(ListAPIView):
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        return Transaction.objects.filter(user=self.request.user)
+        return Transaction.objects.filter(user_id=self.request.user.pk)

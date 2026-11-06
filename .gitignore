@@ -19,3 +19,5 @@ media/
 
 # Docker
 *.log
+# Firebase service account credentials
+firebase-credentials.json

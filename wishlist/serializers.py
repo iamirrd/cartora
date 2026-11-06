@@ -24,11 +24,11 @@ class WishlistSerializer(serializers.ModelSerializer):
             'user_email',
             'user_name',
             )
-    def get_user_name(self, obj):
+    def get_user_name(self, obj) -> str:
         full_name = f"{obj.user.first_name} {obj.user.last_name}".strip()
         return full_name or obj.user.email
         
-    def get_items_count(self, obj):
+    def get_items_count(self, obj) -> int:
             return obj.items_count
     
 

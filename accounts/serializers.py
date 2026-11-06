@@ -1,3 +1,4 @@
+from django.db import IntegrityError, transaction
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.password_validation import validate_password
@@ -10,7 +11,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True,
         required=True,
-        validators=[validate_password],
     )
     password2 = serializers.CharField(write_only=True, required=True)
     
@@ -21,14 +21,17 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError('Passwords do not match')
+        validate_password(attrs['password'], user=User(**{key: value for key, value in attrs.items() if key not in ('password', 'password2')}))
         return attrs
     
     def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
+        value = value.strip().lower()
+        if User.objects.filter(email__iexact=value).exists():
             raise serializers.ValidationError('Email already exists')
         return value
     
     def validate_phone(self, value):
+        value = value or None
         if value and User.objects.filter(phone=value).exists():
             raise serializers.ValidationError('Phone already exists')
         return value
@@ -37,8 +40,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         validated_data.pop('password2')
         password = validated_data.pop('password')
         validated_data['username'] = validated_data['email']
-        user = User.objects.create_user(password=password, **validated_data)
-        return user
+        try:
+            with transaction.atomic():
+                return User.objects.create_user(password=password, **validated_data)
+        except IntegrityError:
+            raise serializers.ValidationError('An account with this email or phone already exists.')
 
 
 class UserLoginSerializer(TokenObtainPairSerializer):

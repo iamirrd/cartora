@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 from .models import Notification, NotificationType
 from fcm_django.models import FCMDevice
 from firebase_admin.messaging import Message, Notification as FCMNotification
@@ -17,8 +21,10 @@ def send_notification_to_user(user, title, message, notif_type=NotificationType.
     # ۲. ارسال Push (اگر کاربر دستگاهی ثبت کرده باشه)
     devices = FCMDevice.objects.filter(user=user, active=True)
     if devices.exists():
-        devices.send_message(
-            Message(
-                notification=FCMNotification(title=title, body=message)
+        try:
+            devices.send_message(
+                Message(notification=FCMNotification(title=title, body=message))
             )
-        )
+        except Exception:
+            # A push provider failure must not fail an already saved operation.
+            logger.exception("Push notification delivery failed for user %s", user.pk)

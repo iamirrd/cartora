@@ -10,3 +10,7 @@ class ShippingMethodSerializer(serializers.ModelSerializer):
                   'created_at' , 'updated_at'
                   )
         read_only_fields = ('id', 'created_at' , 'updated_at')
+    def validate_cost(self, value):
+        if value < 0:
+            raise serializers.ValidationError('Shipping cost cannot be negative.')
+        return value

@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from accounts.models import User
 from common.models import BaseModel
 from django.core.validators import RegexValidator
@@ -29,8 +29,10 @@ class Address(BaseModel):
     def __str__(self):
         return f"{self.user.email} - {self.title}"
     
+    @transaction.atomic
     def save(self, *args, **kwargs):
         """اگه این آدرس پیش‌فرض شد، بقیه رو غیرپیش‌فرض کن."""
+        User.objects.select_for_update().get(pk=self.user_id)
         if self.is_default:
             Address.objects.filter(
                 user=self.user,

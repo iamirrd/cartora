@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
 from common.models import BaseModel
@@ -66,6 +67,15 @@ class Product(BaseModel):
         ]
 
 
+    def clean(self):
+        super().clean()
+        if self.price is not None and self.price < 0:
+            raise ValidationError({'price': 'Price cannot be negative.'})
+        if self.discount_price is not None and (
+            self.discount_price < 0 or self.price is None or self.discount_price > self.price
+        ):
+            raise ValidationError({'discount_price': 'Discount price must be between zero and price.'})
+
     def __str__(self):
         return self.name
 
@@ -103,6 +113,15 @@ class ProductVariant(BaseModel):
             models.Index(fields=['product']),
             models.Index(fields=['price']),
         ]
+
+    def clean(self):
+        super().clean()
+        if self.price is not None and self.price < 0:
+            raise ValidationError({'price': 'Price cannot be negative.'})
+        if self.discount_price is not None and (
+            self.discount_price < 0 or self.price is None or self.discount_price > self.price
+        ):
+            raise ValidationError({'discount_price': 'Discount price must be between zero and price.'})
 
     def __str__(self):
         return f"{self.product.name} - {self.name}"

@@ -9,5 +9,6 @@ class ShippingMethodViewSet(ModelViewSet):
     serializer_class = ShippingMethodSerializer
     
     def get_queryset(self):
-        return ShippingMethod.objects.filter(is_active=True)
+        queryset = ShippingMethod.objects.all()
+        return queryset if self.request.user.is_staff else queryset.filter(is_active=True)
     

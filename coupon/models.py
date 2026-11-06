@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 from common.models import BaseModel
 from django.utils import timezone
@@ -41,19 +42,23 @@ class Coupon(BaseModel):
         now = timezone.now()
         return (
             self.is_active
+            and self.discount_value > 0
+            and (self.discount_type != DiscountType.PERCENTAGE or self.discount_value <= 100)
+            and self.min_purchase >= 0
+            and (self.max_discount is None or self.max_discount >= 0)
             and self.valid_from <= now <= self.valid_to
             and self.used_count < self.usage_limit
         )
     
     def calculate_discount(self, total):
         """محاسبه تخفیف برای یه مبلغ."""
-        if total < self.min_purchase:
+        if not self.is_valid or total < self.min_purchase:
             return 0
         
         if self.discount_type == DiscountType.PERCENTAGE:
             discount = total * self.discount_value / 100
-            if self.max_discount:
+            if self.max_discount is not None:
                 discount = min(discount, self.max_discount)
-            return discount
+            return min(total, discount.quantize(Decimal('1')))
         
         return min(self.discount_value, total)

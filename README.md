@@ -19,7 +19,7 @@ A modular e-commerce backend API built with **Python, Django, and Django REST Fr
 
 ## Tech Stack
 
-- Python 3.12
+- Python 3.14
 - Django
 - Django REST Framework
 - PostgreSQL
@@ -68,3 +68,37 @@ docker compose run --rm web python manage.py createsuperuser
 ## Note
 
 The payment gateway is simulated and does not process real payments.
+## Runtime configuration
+
+Set `DJANGO_SECRET_KEY` to a private value before running with `DEBUG=False`.
+Set `ALLOWED_HOSTS` to a comma-separated list of hostnames (default:
+`localhost,127.0.0.1,[::1]`) and configure `POSTGRES_PASSWORD` in the environment.
+
+Order items accept an `order` ID belonging to the authenticated user. Orders and
+items become immutable while a payment is pending or after it succeeds. Failed
+payments allow the order to be edited and retried. Orders with payment records
+cannot be deleted. Repeated
+payment requests reuse the pending transaction; repeated successful callbacks
+return success without processing the payment again. The payment gateway remains
+a simulator and must be replaced before accepting real payments.
+
+### Checkout and inventory
+
+`POST /api/order/orders/checkout/` copies the authenticated user's active cart
+into an order using current product prices and clears the cart in one database
+transaction. Supply the receiver/address fields from the order API. Individual
+order and order-item endpoints remain available.
+
+Product writes accept `category_id` and `brand_id`. Orders accept an optional
+`shipping_method` ID and `coupon_code`; shipping and discount amounts are computed
+by the server. Coupon validity, minimum purchase and usage limits are checked
+again during payment. Stock is checked across all items of the same variant and
+reduced atomically on successful mock payment. Repeated callbacks do not reduce
+stock or consume coupons again. Pending payments do not reserve stock; an order
+can fail payment if another customer buys the remaining stock first.
+
+Mock payments require `DEBUG=True` and `ENABLE_MOCK_PAYMENTS=True` and are disabled
+when `DEBUG=False`. There is no live payment provider in this repository.
+
+After updating, run `python manage.py migrate` to add the order coupon and discount
+fields. The Docker database health check waits for PostgreSQL before starting Django.

@@ -1,5 +1,5 @@
-# Use Python 3.12 as the base image
-FROM python:3.12-slim
+# Use Python 3.14 as the base image
+FROM python:3.14-slim
 
 # Prevent Python from writing .pyc files and enable unbuffered output
 ENV PYTHONDONTWRITEBYTECODE=1

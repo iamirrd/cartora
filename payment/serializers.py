@@ -12,4 +12,4 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 
 class PaymentRequestSerializer(serializers.Serializer):
-    order_id = serializers.IntegerField()
+    order_id = serializers.IntegerField(min_value=1)

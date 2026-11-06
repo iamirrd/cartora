@@ -45,6 +45,8 @@ class Order(BaseModel):
         decimal_places=0,
         default=0,
     )
+    coupon = models.ForeignKey('coupon.Coupon', on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
+    discount_amount = models.DecimalField(max_digits=12, decimal_places=0, default=0)
     receiver_name = models.CharField(max_length=100)
     receiver_phone = models.CharField(max_length=15)
     province = models.CharField(max_length=50)
@@ -71,7 +73,7 @@ class Order(BaseModel):
         super().save(*args, **kwargs)
     
     @property
-    def total_price(self):
+    def subtotal(self):
         """جمع کل سفارش (با ارسال)."""
         items_total = self.items.aggregate(
             total=models.Sum(
@@ -80,7 +82,11 @@ class Order(BaseModel):
             )
         )['total'] or 0
         
-        return items_total + self.shipping_cost
+        return items_total
+
+    @property
+    def total_price(self):
+        return max(0, self.subtotal - self.discount_amount) + self.shipping_cost
 
 
 class OrderItem(BaseModel):

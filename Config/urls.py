@@ -1,10 +1,6 @@
 from django.contrib import admin
 from django.urls import path , include
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
-from django.contrib import admin
+from accounts.api_views import UserLoginView, UserTokenRefreshView
 from allauth.account.decorators import secure_admin_login
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
@@ -15,8 +11,8 @@ admin.site.login = secure_admin_login(admin.site.login)
 urlpatterns = [
     path('admin/'            , admin.site.urls),
     path('accounts/'         , include('allauth.urls')),
-    path('api/token/'        , TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/'        , UserLoginView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', UserTokenRefreshView.as_view(), name='token_refresh'),
     path('api/schema/'       , SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/'         , SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/accounts/'     , include('accounts.urls')),

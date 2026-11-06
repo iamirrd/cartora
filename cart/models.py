@@ -28,7 +28,7 @@ class Cart(BaseModel):
         """جمع کل سبد."""
         total = self.items.aggregate(
             total=models.Sum(
-                models.F('price') * models.F('quantity'),
+                models.functions.Coalesce('discount_price', 'price') * models.F('quantity'),
                 output_field=models.DecimalField(max_digits=12, decimal_places=0),
             )
         )['total']
@@ -90,7 +90,7 @@ class CartItem(BaseModel):
     @property
     def unit_price(self):
         """قیمت واحد (با تخفیف اگه داشت)."""
-        return self.discount_price or self.price
+        return self.discount_price if self.discount_price is not None else self.price
 
     @property
     def subtotal(self):

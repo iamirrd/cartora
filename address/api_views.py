@@ -11,7 +11,7 @@ class AddressViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        return Address.objects.filter(user=self.request.user)
+        return Address.objects.filter(user_id=self.request.user.pk)
     
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

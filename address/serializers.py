@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Address
 
 class AddressSerializer(serializers.ModelSerializer):
+    postal_code = serializers.RegexField(r"^[0-9]{10}$")
     class Meta:
         model = Address
         fields = (

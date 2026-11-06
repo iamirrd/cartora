@@ -2,6 +2,18 @@ from rest_framework import serializers
 from .models import Category, Brand, Product, ProductImage, ProductVariant, Inventory
 
 
+class PriceValidationMixin:
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        price = attrs.get('price', getattr(self.instance, 'price', None))
+        discount = attrs.get('discount_price', getattr(self.instance, 'discount_price', None))
+        if price is not None and price < 0:
+            raise serializers.ValidationError({'price': 'Price cannot be negative.'})
+        if discount is not None and (discount < 0 or discount > price):
+            raise serializers.ValidationError({'discount_price': 'Discount price must be between zero and price.'})
+        return attrs
+
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -23,7 +35,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'created_at', 'updated_at')
 
 
-class ProductVariantSerializer(serializers.ModelSerializer):
+class ProductVariantSerializer(PriceValidationMixin, serializers.ModelSerializer):
     class Meta:
         model = ProductVariant
         fields = (
@@ -40,9 +52,11 @@ class InventorySerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'updated_at')
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductSerializer(PriceValidationMixin, serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     brand    = BrandSerializer(read_only=True)
+    category_id = serializers.PrimaryKeyRelatedField(source='category', queryset=Category.objects.all(), write_only=True)
+    brand_id = serializers.PrimaryKeyRelatedField(source='brand', queryset=Brand.objects.all(), write_only=True)
     images   = ProductImageSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
     
@@ -51,7 +65,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'name', 'slug', 'description',
             'price', 'discount_price',
-            'category', 'brand',
+            'category', 'brand', 'category_id', 'brand_id',
             'images', 'variants',
             'is_active', 'created_at', 'updated_at',
         )
