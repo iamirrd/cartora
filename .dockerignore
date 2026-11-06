@@ -12,3 +12,5 @@ README.md
 firebase-credentials.json
 media/
 staticfiles/
+
+.env.*

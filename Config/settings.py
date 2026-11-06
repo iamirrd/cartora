@@ -15,11 +15,8 @@ from datetime import timedelta
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
-
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -77,7 +74,7 @@ INSTALLED_APPS = [
 
 ]
 
-GOOGLE_APPLICATION_CREDENTIALS = os.path.join(BASE_DIR, 'firebase-credentials.json')
+FIREBASE_ENABLED = os.environ.get('FIREBASE_ENABLED', 'False').lower() in ('true', '1', 'yes')
 
 FCM_DJANGO_SETTINGS = {
     "APP_VERBOSE_NAME": "Cartora Shop",

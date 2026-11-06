@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED=1
 # Set working directory inside the container
 WORKDIR /app
 
-# Install system dependencies (required for psycopg2 and Pillow)
+# Install libraries and compiler needed by psycopg and image dependencies
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \

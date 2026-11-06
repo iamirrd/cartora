@@ -1,3 +1,4 @@
+from django.conf import settings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -20,7 +21,7 @@ def send_notification_to_user(user, title, message, notif_type=NotificationType.
 
     # ۲. ارسال Push (اگر کاربر دستگاهی ثبت کرده باشه)
     devices = FCMDevice.objects.filter(user=user, active=True)
-    if devices.exists():
+    if settings.FIREBASE_ENABLED and devices.exists():
         try:
             devices.send_message(
                 Message(notification=FCMNotification(title=title, body=message))

@@ -21,3 +21,7 @@ media/
 *.log
 # Firebase service account credentials
 firebase-credentials.json
+
+# Local environment overrides
+.env.*
+!.env.example
