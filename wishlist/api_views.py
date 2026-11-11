@@ -24,7 +24,7 @@ class WishlistItemViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        return WishlistItem.objects.filter(wishlist__user_id=self.request.user.pk)
+        return WishlistItem.objects.filter(wishlist__user_id=self.request.user.pk).order_by('pk')
     
     @transaction.atomic
     def perform_create(self, serializer):

@@ -1,0 +1,38 @@
+{% load static i18n %}
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#164e43">
+    <title>{% block head_title %}حساب کاربری{% endblock %} | کارتورا</title>
+    <link rel="stylesheet" href="{% static 'accounts/auth.css' %}">
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body>
+    <header class="auth-header">
+      <a class="brand" href="{% url 'admin:index' %}" aria-label="کارتورا"><span class="brand-icon">ک</span> کارتورا<span class="brand-dot">.</span></a>
+      <span class="header-note"><span class="status-dot"></span>حساب کاربری کارتورا</span>
+    </header>
+    <main class="auth-shell">
+      <aside class="story" aria-label="کارتورا">
+        <span class="story-kicker">CARTORA / YOUR EVERYDAY CHOICE</span>
+        <h2>یک ورود ساده،<br> یک شروع <span>تازه.</span></h2>
+        <p class="story-description">همه‌چیز برای ساختن یک تجربهٔ خرید بهتر،<br>از همین‌جا شروع می‌شود.</p>
+        <div class="art" aria-hidden="true"><div class="ring ring-outer"></div><div class="ring ring-inner"></div><div class="bag"><span class="bag-handle"></span><span class="bag-logo">کارتورا.</span><span class="bag-caption">با دقت انتخاب کن</span></div><span class="spark spark-one">✳</span><span class="spark spark-two">+</span><span class="art-chip"><span>✦</span> جزئیات کوچک، تجربه‌های بهتر</span></div>
+        <div class="story-bottom"><span class="story-line"></span><span>برای هر روزِ تو</span><span class="story-index">۰۱ / کارتورا</span></div>
+      </aside>
+      <section class="form-area" aria-label="فرم حساب کاربری">
+        <div class="form-inner">
+          {% language 'fa' %}
+            {% if messages %}<div class="messages" role="status">{% for message in messages %}<p class="notice">{{ message }}</p>{% endfor %}</div>{% endif %}
+            {% block content %}{% endblock %}
+          {% endlanguage %}
+        </div>
+        <p class="form-footnote"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> ورود به حساب شخصی شما</p>
+      </section>
+    </main>
+    <footer class="auth-footer"><span>کارتورا؛ هر روز، فرصتی برای یک انتخاب تازه.</span><span dir="ltr">CARTORA © {% now 'Y' %}</span></footer>
+    {% block extra_body %}{% endblock %}
+  </body>
+</html>

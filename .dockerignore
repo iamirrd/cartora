@@ -14,3 +14,12 @@ media/
 staticfiles/
 
 .env.*
+frontend/node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.github/
+docs/

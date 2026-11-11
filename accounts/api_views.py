@@ -8,7 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.exceptions import TokenError
 
-from .serializers import UserRegisterSerializer, UserLoginSerializer
+from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer
 
 
 class UserRegisterView(APIView):
@@ -17,7 +17,7 @@ class UserRegisterView(APIView):
     
     @extend_schema(request=UserRegisterSerializer, responses={201: inline_serializer(
         name='RegistrationResponse', fields={
-            'user': UserRegisterSerializer(read_only=True),
+            'user': UserSerializer(read_only=True),
             'refresh': serializers.CharField(), 'access': serializers.CharField(),
         },
     )})
@@ -28,7 +28,7 @@ class UserRegisterView(APIView):
         
         refresh = RefreshToken.for_user(user)
         return Response({
-            'user': serializer.data,
+            'user': UserSerializer(user).data,
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }, status=status.HTTP_201_CREATED)

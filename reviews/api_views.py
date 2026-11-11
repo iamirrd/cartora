@@ -15,6 +15,7 @@ class ReviewAccess(BasePermission):
 
 class ReviewViewSet(ModelViewSet):
     serializer_class = ReviewSerializer
+    filterset_fields = ['product']
     permission_classes = [IsAuthenticatedOrReadOnly, ReviewAccess]
 
     def get_queryset(self):

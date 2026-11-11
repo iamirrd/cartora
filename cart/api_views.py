@@ -27,7 +27,7 @@ class CartItemViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        return CartItem.objects.filter(cart__user_id=self.request.user.pk)
+        return CartItem.objects.filter(cart__user_id=self.request.user.pk).order_by('pk')
     
     @transaction.atomic
     def perform_create(self, serializer):

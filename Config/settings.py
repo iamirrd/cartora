@@ -26,7 +26,9 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'fallback-secret-key-for-dev-only')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
+# Prefer a Django-specific name: Windows/tooling may define DEBUG=release.
+# Keep DEBUG as a fallback for existing deployment configurations.
+DEBUG = os.environ.get('DJANGO_DEBUG', os.environ.get('DEBUG', 'True')).lower() in ('true', '1', 'yes')
 ENABLE_MOCK_PAYMENTS = DEBUG and os.environ.get('ENABLE_MOCK_PAYMENTS', 'True').lower() in ('true', '1', 'yes')
 ALLOWED_HOSTS = [host.strip() for host in os.environ.get(
     'ALLOWED_HOSTS', 'localhost,127.0.0.1,[::1]'
@@ -148,7 +150,7 @@ ROOT_URLCONF = 'Config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

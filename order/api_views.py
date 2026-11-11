@@ -92,10 +92,11 @@ class OrderViewSet(ModelViewSet):
 
 class OrderItemViewSet(ModelViewSet):
     serializer_class = OrderItemSerializer
+    filterset_fields = ['order']
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return OrderItem.objects.filter(order__user_id=self.request.user.pk).select_related('order', 'variant__product')
+        return OrderItem.objects.filter(order__user_id=self.request.user.pk).select_related('order', 'variant__product').order_by('pk')
 
     @transaction.atomic
     def perform_create(self, serializer):

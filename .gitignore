@@ -8,6 +8,7 @@ wheels/
 
 # Virtual environments
 .venv/
+node_modules/
 .env
 
 # Database
@@ -25,3 +26,23 @@ firebase-credentials.json
 # Local environment overrides
 .env.*
 !.env.example
+
+# Local tools and generated reports
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage/
+playwright-report/
+test-results/
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Private keys and local database backups
+*.pem
+*.key
+*.sqlite3
+*.sqlite3-journal
+*.dump
